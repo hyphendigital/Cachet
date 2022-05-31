@@ -101,12 +101,14 @@ class DashboardController extends Controller
 
         $welcomeUser = !Auth::user()->welcomed;
         if ($welcomeUser) {
-            dispatch(new WelcomeUserCommand(Auth::user()));
+            execute(new WelcomeUserCommand(Auth::user()));
         }
 
         $entries = null;
-        if ($feed = $this->feed->latest()) {
-            $entries = array_slice($feed->channel->item, 0, 5);
+        if ($feed = $this->feed->latest() !== 1) {
+            if (is_object($feed)) {
+                $entries = array_slice($feed->channel->item, 0, 5);
+            }
         }
 
         return View::make('dashboard.index')
